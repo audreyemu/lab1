@@ -7,6 +7,9 @@
 
 int main(int argc, char *argv[])
 {
+  if(argc == 1){
+    return EINVAL;
+  }
   int to_shell[2];
   pipe(to_shell);
   int return_code = fork();
@@ -16,15 +19,16 @@ int main(int argc, char *argv[])
       if(return_code == 0){
 	dup2(to_shell[1],1);
 	close(to_shell[0]);
-	exec_status = execlp(argv[i], argv[i], NULL);
+	execlp(argv[i], argv[i], NULL);
+	return errno;
       }
       else if(return_code > 0){
 	close(to_shell[1]);
 	int pid = return_code;
 	int status = 0;
 	waitpid(pid, &status, 0);
-	if(WIFEXITED(status) && WEXITSTATUS(status) != 0){
-	  exit(errno);
+	if(WEXITSTATUS(status)){
+	  return WEXITSTATUS(status);
 	}
 	pipe(to_shell);
 	return_code = fork();
@@ -38,14 +42,15 @@ int main(int argc, char *argv[])
 	dup2(3, 0);
 	close(to_shell[0]);
 	close(to_shell[1]);
-	exec_status = execlp(argv[i], argv[i], NULL);
+	execlp(argv[i], argv[i], NULL);
+	return errno;
       }
       else if(return_code > 0){
 	int pid = return_code;
 	int status = 0;
 	waitpid(pid, &status, 0);
-	if(WIFEXITED(status) && WEXITSTATUS(status) != 0){
-	  exit(errno);
+	if(WEXITSTATUS(status)){
+	  return WEXITSTATUS(status);
 	}
 	close(3);
 	close(to_shell[0]);
@@ -60,7 +65,8 @@ int main(int argc, char *argv[])
 	dup2(3, 0);
 	dup2(to_shell[1], 1);
 	close(to_shell[0]);
-	exec_status = execlp(argv[i], argv[i], NULL);
+	execlp(argv[i], argv[i], NULL);
+	return errno;
       }
       else if(return_code > 0){
 	close(3);
@@ -69,8 +75,8 @@ int main(int argc, char *argv[])
 	int pid = return_code;
 	int status = 0;
 	waitpid(pid, &status, 0);
-	if(WIFEXITED(status) && WEXITSTATUS(status) != 0){
-	  exit(errno);
+	if(WEXITSTATUS(status)){
+	  return WEXITSTATUS(status);
 	}
 	pipe(to_shell);
 	return_code = fork();

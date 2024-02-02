@@ -2,16 +2,16 @@
 
 ## Pipe Up
 
-One sentence description
+Pipe up is a program that performs like the pipe operator in linux by connecting the inputs/outputs between up to 8 different processes.
 
 ## Building
 
-Explain briefly how to build your program
+Simply run the ```make``` command to build this program
 
 ## Running
 
-Show an example run of your program, using at least two additional arguments, and what to expect
+To run this program, run ./pipe followed by up to 8 (at least 1) arguments representing additional processes. Running ```./pipe ls cat wc``` should return something like ```7     7     63``` which is the same output produced by ```ls|cat|wc```
 
 ## Cleaning up
 
-Explain briefly how to clean up all binary files
+To clean up all binary files, run ```make clean```
